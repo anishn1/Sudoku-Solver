@@ -1,0 +1,3 @@
+[submodule "lib/csp-solver"]
+	path = lib/csp-solver
+	url = git@github.com:anishn1/CSP-Solver-Library.git
