@@ -8,19 +8,22 @@ CSP problem;
 
 void printBoard() {
   for (int row = 0; row < 9; row++) {
-    printf("|");
+    if (row % 3 == 0) {
+      printf("+-------+-------+-------+\n");
+    }
     for (int col = 0; col < 9; col++) {
-      if (cells[row][col]->isAssigned == false) {
-        printf("x");
-      } else {
-        printf("%d", cells[row][col]->value);
+      if (col % 3 == 0) {
+        printf("| ");
       }
-      if (col < 8) {
-        printf(", ");
+      if (cells[row][col]->isAssigned == false) {
+        printf("x ");
+      } else {
+        printf("%d ", cells[row][col]->value);
       }
     }
     printf("|\n");
   }
+  printf("+-------+-------+-------+\n");
 }
 
 void setVariables() {
