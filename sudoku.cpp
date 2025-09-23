@@ -3,10 +3,7 @@
 #include "lib/csp-solver/solver.h"
 #include "lib/csp-solver/constraints.h"
 
-Variable *cells[9][9];
-CSP problem;
-
-void printBoard() {
+void Sudoku::printBoard() {
   for (int row = 0; row < 9; row++) {
     if (row % 3 == 0) {
       printf("+-------+-------+-------+\n");
@@ -18,7 +15,7 @@ void printBoard() {
       if (cells[row][col]->isAssigned == false) {
         printf("x ");
       } else {
-        printf("%d ", cells[row][col]->value);
+        printf("\033[1;34m%d \033[0m", cells[row][col]->value);
       }
     }
     printf("|\n");
@@ -26,7 +23,7 @@ void printBoard() {
   printf("+-------+-------+-------+\n");
 }
 
-void setVariables() {
+void Sudoku::setVariables() {
   std::vector<int> domain = {1,2,3,4,5,6,7,8,9};
   for (int row = 0; row < 9; row++) {
     for (int col = 0; col < 9; col++) {
@@ -36,7 +33,7 @@ void setVariables() {
   }
 }
 
-std::vector<Variable *> getBox(int boxRow, int boxCol) {
+std::vector<Variable *> Sudoku::getBox(int boxRow, int boxCol) {
   std::vector<Variable *> box;
   for (int row = 0; row < 3; row++) {
     for (int col = 0; col < 3; col++) {
@@ -46,7 +43,7 @@ std::vector<Variable *> getBox(int boxRow, int boxCol) {
   return box;
 }
 
-void setConstraints() {
+void Sudoku::setConstraints() {
   for (int row = 0; row < 9; row++) {
     std::vector<Variable*> r;
     for (int col = 0; col < 9; col++) {
@@ -70,7 +67,7 @@ void setConstraints() {
 }
 
 
-void loadStringClue(const std::string& puzzle) {
+void Sudoku::loadStringClue(const std::string& puzzle) {
   if (puzzle.size() != 81) {
     std::cout << "Invalid string size\n";
   }
@@ -93,12 +90,14 @@ void loadStringClue(const std::string& puzzle) {
 
 int main(int argc, char* argv[]) {
   // setVariables();
-  loadStringClue(argv[1]);
-  std::cout << "Loaded\n";
-  printBoard();
-  setConstraints();
-  if (solve(problem)) {
-  	printBoard();
+  Sudoku sudoku;
+  sudoku.loadStringClue(argv[1]);
+  std::cout << "\nBefore:\n\n";
+  sudoku.printBoard();
+  sudoku.setConstraints();
+  if (solve(sudoku.problem)) {
+    std::cout << "\nAfter:\n\n";
+  	sudoku.printBoard();
   } else {
 	std::cout << "Solution does not exist\n";
   }
