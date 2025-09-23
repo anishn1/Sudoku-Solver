@@ -66,10 +66,37 @@ void setConstraints() {
   }
 }
 
-int main() {
-  setVariables();
+
+void loadStringClue(const std::string& puzzle) {
+  if (puzzle.size() != 81) {
+    std::cout << "Invalid string size\n";
+  }
+  std::vector<int> domain = {1,2,3,4,5,6,7,8,9};
+  for (int i = 0; i < 81; i++) {
+    int row = i / 9;
+    int col = i % 9;
+    char c = puzzle[i];
+    std::string name = "Cell" + std::to_string(row*9+col);
+    int val = c - '0';
+    if (val <= 9 && val >= 1) {
+      cells[row][col] = problem.addVariable(name, {val});
+      cells[row][col]->isAssigned = true;
+      cells[row][col]->value = val;
+    } else {
+      cells[row][col] = problem.addVariable(name, domain);
+    }
+  }
+}
+
+int main(int argc, char* argv[]) {
+  // setVariables();
+  loadStringClue(argv[1]);
+  std::cout << "Loaded\n";
   printBoard();
   setConstraints();
-  solve(problem);
-  printBoard();
+  if (solve(problem)) {
+  	printBoard();
+  } else {
+	std::cout << "Solution does not exist\n";
+  }
 }
