@@ -65,3 +65,11 @@ void setConstraints() {
     }
   }
 }
+
+int main() {
+  setVariables();
+  printBoard();
+  setConstraints();
+  solve(problem);
+  printBoard();
+}
