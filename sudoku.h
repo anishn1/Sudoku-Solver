@@ -21,5 +21,6 @@ class Sudoku {
     std::vector<Variable *> getBox(int boxRow, int boxCol);
     void setVariables();
     void printBoard();
+	void loadCSV(const std::string& fileName);
 };
 #endif //SUDOKU_H

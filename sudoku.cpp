@@ -2,6 +2,8 @@
 #include "sudoku.h"
 #include "lib/csp-solver/solver.h"
 #include "lib/csp-solver/constraints.h"
+#include <fstream>
+#include <sstream>
 
 void Sudoku::printBoard() {
   for (int row = 0; row < 9; row++) {
@@ -88,17 +90,50 @@ void Sudoku::loadStringClue(const std::string& puzzle) {
   }
 }
 
+void Sudoku::loadCSV(const std::string& fileName) {
+  std::ifstream file(fileName);
+  if (!file.is_open()) {
+    std::cerr << "Error: Could not open " << fileName << "\n";
+    return;
+  }
+  std::vector<int> domain = {1,2,3,4,5,6,7,8,9};
+  std::string line;
+  int row = 0;
+  while (getline(file, line) &&  row < 9) {
+    std::stringstream ss(line);
+    int col = 0;
+    std::string cell;
+    std::string name = "Cell" + std::to_string(row*9 + col);
+    while (std::getline(ss, cell, ',') && col < 9) {
+      int val = std::stoi(cell);
+      if (val <= 9 && val >= 1) {
+        cells[row][col] = problem.addVariable(name, {val});
+        cells[row][col]->isAssigned = true;
+        cells[row][col]->value = val;
+      } else {
+        cells[row][col] = problem.addVariable(name, domain);
+      }
+      col++;
+    }
+    row++;
+  }
+
+}
+
 int main(int argc, char* argv[]) {
   // setVariables();
   Sudoku sudoku;
-  sudoku.loadStringClue(argv[1]);
-  std::cout << "\nBefore:\n\n";
+  std::string mode = argv[1];
+  if (mode == "--string") {
+    sudoku.loadStringClue(argv[2]);
+  } else if (mode == "--csv") {
+    sudoku.loadCSV(argv[2]);
+  } else {
+    std::cout << "Invalid mode\n";
+    return 1;
+  }
   sudoku.printBoard();
   sudoku.setConstraints();
-  if (solve(sudoku.problem)) {
-    std::cout << "\nAfter:\n\n";
-  	sudoku.printBoard();
-  } else {
-	std::cout << "Solution does not exist\n";
-  }
+  solve(sudoku.problem);
+  sudoku.printBoard();
 }
